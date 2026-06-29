@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %} — Bottle{% endblock %}
+
+{% block body %}
+<div class="brandbar">
+  <img src="{{ url_for('static', filename='img/zephor_logo.svg') }}" alt="Zephor">
+  <span class="wordmark">Zephor</span>
+</div>
+
+<div class="screen">
+  <div class="card stack-lg">
+    <div>
+      <div class="eyebrow">Bottle detected</div>
+      <h1 class="title" id="bottle-brand">—</h1>
+    </div>
+
+    <div class="points-badge">
+      <span class="num" id="bottle-points">0</span>
+      <span class="lbl">points</span>
+    </div>
+
+    <div class="detail-rows">
+      <div class="detail-row"><span class="k">Size</span><span class="v" id="bottle-size">—</span></div>
+      <div class="detail-row"><span class="k">Material</span><span class="v" id="bottle-type">—</span></div>
+      <div class="detail-row"><span class="k">Barcode</span><span class="v" id="bottle-barcode">—</span></div>
+    </div>
+
+    <button class="btn btn-primary btn-block" id="btn-ok">OK</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  ZephorKiosk.startIdleTimeout(45);
+
+  var deposit = ZephorKiosk.getState('deposit');
+  if (!deposit || !deposit.bottle) {
+    window.location.href = '/';
+  } else {
+    var b = deposit.bottle;
+    document.getElementById('bottle-brand').textContent = b.brand;
+    document.getElementById('bottle-points').textContent = b.points;
+    document.getElementById('bottle-size').textContent = b.size;
+    document.getElementById('bottle-type').textContent = b.type;
+    document.getElementById('bottle-barcode').textContent = deposit.barcode;
+  }
+
+  document.getElementById('btn-ok').addEventListener('click', function () {
+    window.location.href = '/thankyou';
+  });
+</script>
+{% endblock %}

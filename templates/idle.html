@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %} — Welcome{% endblock %}
+
+{% block body %}
+<div class="screen idle" id="idle-screen">
+  <div class="idle-eyebrow">Bottle Recycling Kiosk</div>
+  <img class="logo" src="{{ url_for('static', filename='img/zephor_logo.svg') }}" alt="Zephor">
+  <div class="brand">Zephor</div>
+  <div class="tagline" id="tagline">Recycle a bottle, earn points</div>
+
+  <div class="idle-steps">
+    <div class="idle-step">
+      <span class="num">1</span>
+      <span class="lbl">Enter your register number</span>
+    </div>
+    <div class="idle-step">
+      <span class="num">2</span>
+      <span class="lbl">Drop your bottle in the slot</span>
+    </div>
+    <div class="idle-step">
+      <span class="num">3</span>
+      <span class="lbl">Earn your points instantly</span>
+    </div>
+  </div>
+
+  <div class="touch-hint">Touch anywhere to start</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Rotating eco taglines on the attract screen
+  ZephorKiosk.rotateTaglines('tagline', [
+    'Recycle a bottle, earn points',
+    'Every bottle counts for your class',
+    'Turn plastic into rewards',
+    'A cleaner campus starts here',
+  ]);
+
+  // Touch anywhere -> registration. Start each session from a clean slate.
+  document.getElementById('idle-screen').addEventListener('click', function () {
+    ZephorKiosk.clearState();
+    window.location.href = '/register';
+  });
+</script>
+{% endblock %}

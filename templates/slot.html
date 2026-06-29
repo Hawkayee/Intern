@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %} — Deposit{% endblock %}
+
+{% block body %}
+<div class="brandbar">
+  <img src="{{ url_for('static', filename='img/zephor_logo.svg') }}" alt="Zephor">
+  <span class="wordmark">Zephor</span>
+</div>
+
+<div class="screen">
+  <div class="eyebrow" id="slot-eyebrow">Get ready</div>
+  <h1 class="title" id="slot-title">Opening the slot…</h1>
+
+  <div class="slot-stage" id="slot-stage">
+    <div class="slot-opening">⬇</div>
+    <div class="slot-door left"></div>
+    <div class="slot-door right"></div>
+    <div class="capture-flash" id="capture-flash"></div>
+  </div>
+
+  <div class="slot-status" id="slot-status"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  var deposit = ZephorKiosk.getState('deposit');
+  if (!deposit) { window.location.href = '/'; }
+
+  var stage   = document.getElementById('slot-stage');
+  var title   = document.getElementById('slot-title');
+  var status  = document.getElementById('slot-status');
+  var flash   = document.getElementById('capture-flash');
+
+  // Sequence: open slot -> insert prompt -> capture photo -> next screen.
+  // Each physical action is recorded via /api/deposit (simulated hardware).
+  setTimeout(function () {
+    stage.classList.add('open');
+    title.textContent = 'Insert your bottle';
+    status.innerHTML = 'Slot is <span class="dot">open</span> — drop your bottle in';
+  }, 600);
+
+  setTimeout(function () {
+    title.textContent = 'Capturing photo…';
+    status.textContent = 'Hold still';
+    flash.classList.add('fire');
+  }, 3200);
+
+  setTimeout(function () {
+    // Record the deposit (open_slot + capture_image on the backend).
+    ZephorKiosk.postJSON('/api/deposit', {
+      reg_no: deposit.reg_no,
+      barcode: deposit.barcode,
+    }).then(function (res) {
+      ZephorKiosk.setState('deposit', Object.assign({}, deposit, { image: res.image }));
+      // Barcode path -> bottle details; no-barcode path -> thank you.
+      window.location.href = deposit.barcode ? '/bottle' : '/thankyou';
+    }).catch(function () {
+      window.location.href = deposit.barcode ? '/bottle' : '/thankyou';
+    });
+  }, 4200);
+</script>
+{% endblock %}

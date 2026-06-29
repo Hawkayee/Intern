@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %} — Registration{% endblock %}
+
+{% block body %}
+<div class="brandbar">
+  <img src="{{ url_for('static', filename='img/zephor_logo.svg') }}" alt="Zephor">
+  <span class="wordmark">Zephor</span>
+</div>
+
+<div class="screen register">
+  <div class="reg-prompt">
+    <div class="eyebrow">Step 1 of 2</div>
+    <h1 class="title">Enter your registration number</h1>
+    <p class="subtitle">Type your number, then tap Enter</p>
+  </div>
+
+  <div class="reg-display" id="reg-display"></div>
+  <div class="reg-error" id="reg-error"></div>
+
+  <div class="keyboard" id="keyboard"></div>
+
+  <div class="row center" style="margin-top:18px;">
+    <button class="btn btn-ghost" id="btn-cancel">Cancel</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  ZephorKiosk.startIdleTimeout(45);
+
+  var kp = ZephorKiosk.buildKeyboard({
+    keyboardId: 'keyboard',
+    displayId: 'reg-display',
+    maxLength: 12,
+    onEnter: submit,
+  });
+
+  var errorEl = document.getElementById('reg-error');
+
+  function submit(regNo) {
+    errorEl.textContent = '';
+    ZephorKiosk.postJSON('/api/lookup', { reg_no: regNo })
+      .then(function (res) {
+        if (res.found) {
+          ZephorKiosk.setState('student', res);
+          window.location.href = '/confirm';
+        } else {
+          kp.setError();
+          errorEl.textContent = 'Registration number not found. Please try again.';
+        }
+      })
+      .catch(function () {
+        errorEl.textContent = 'Something went wrong. Please try again.';
+      });
+  }
+
+  document.getElementById('btn-cancel').addEventListener('click', function () {
+    ZephorKiosk.clearState();
+    window.location.href = '/';
+  });
+</script>
+{% endblock %}

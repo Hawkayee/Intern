@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %} — Confirm{% endblock %}
+
+{% block body %}
+<div class="brandbar">
+  <img src="{{ url_for('static', filename='img/zephor_logo.svg') }}" alt="Zephor">
+  <span class="wordmark">Zephor</span>
+</div>
+
+<div class="screen">
+  <div class="card stack-lg">
+    <div>
+      <div class="eyebrow">Welcome</div>
+      <h1 class="title" id="student-name">—</h1>
+      <p class="subtitle">Class <span id="student-class">—</span></p>
+    </div>
+
+    <div>
+      <h2 style="font-size:1.6rem;margin-bottom:8px;">Scan your bottle's barcode</h2>
+      <p class="subtitle">Hold the bottle's barcode up to the scanner.</p>
+    </div>
+
+    <div class="stack-md">
+      <button class="btn btn-primary btn-block" id="btn-scan">Scan the Bottle</button>
+      <button class="btn btn-secondary btn-block" id="btn-nobarcode">No barcode — it's plastic</button>
+    </div>
+
+    <div class="reg-error" id="confirm-error"></div>
+
+    <div class="row center">
+      <button class="btn btn-ghost" id="btn-notme">Not you? Start over</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  ZephorKiosk.startIdleTimeout(45);
+
+  var student = ZephorKiosk.getState('student');
+  if (!student) {
+    window.location.href = '/';
+  } else {
+    document.getElementById('student-name').textContent = student.name;
+    document.getElementById('student-class').textContent = student['class'];
+  }
+
+  var errorEl = document.getElementById('confirm-error');
+  var btnScan = document.getElementById('btn-scan');
+  var btnNo = document.getElementById('btn-nobarcode');
+
+  function lockButtons() { btnScan.disabled = true; btnNo.disabled = true; }
+
+  // Path A: barcode scan
+  btnScan.addEventListener('click', function () {
+    errorEl.textContent = '';
+    lockButtons();
+    ZephorKiosk.postJSON('/api/scan', {})
+      .then(function (res) {
+        if (res.scanned) {
+          ZephorKiosk.setState('deposit', {
+            reg_no: student.reg_no,
+            barcode: res.barcode,
+            bottle: res.bottle,
+          });
+          window.location.href = '/slot';
+        } else {
+          errorEl.textContent = 'Could not read the barcode. Try again or choose "No barcode".';
+          btnScan.disabled = false; btnNo.disabled = false;
+        }
+      })
+      .catch(function () {
+        errorEl.textContent = 'Scanner error. Please try again.';
+        btnScan.disabled = false; btnNo.disabled = false;
+      });
+  });
+
+  // Path B: no barcode, student is sure it's plastic
+  btnNo.addEventListener('click', function () {
+    lockButtons();
+    ZephorKiosk.setState('deposit', {
+      reg_no: student.reg_no,
+      barcode: null,
+      bottle: null,
+    });
+    window.location.href = '/slot';
+  });
+
+  document.getElementById('btn-notme').addEventListener('click', function () {
+    ZephorKiosk.clearState();
+    window.location.href = '/';
+  });
+</script>
+{% endblock %}

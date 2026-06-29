@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %} — Thank you{% endblock %}
+
+{% block body %}
+<div class="brandbar">
+  <img src="{{ url_for('static', filename='img/zephor_logo.svg') }}" alt="Zephor">
+  <span class="wordmark">Zephor</span>
+</div>
+
+<div class="screen">
+  <div class="card stack-lg">
+    <div class="success-check">
+      <svg viewBox="0 0 64 64"><path d="M18 34 L28 44 L48 22" /></svg>
+    </div>
+    <div>
+      <h1 class="title">Thank you<span id="ty-name"></span>!</h1>
+      <p class="subtitle" id="ty-message">Your points will be credited once verification is complete.</p>
+    </div>
+    <button class="btn btn-primary btn-block" id="btn-done">Done</button>
+    <p class="reset-note">Returning to start in <span id="ty-count">10</span>s…</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  var deposit = ZephorKiosk.getState('deposit');
+  var student = ZephorKiosk.getState('student');
+
+  if (student && student.name) {
+    document.getElementById('ty-name').textContent = ', ' + student.name.split(' ')[0];
+  }
+
+  // Tailor the message: scanned bottles get a points hint; no-barcode
+  // deposits are credited after manual verification.
+  var msg = document.getElementById('ty-message');
+  if (deposit && deposit.bottle) {
+    msg.textContent = deposit.bottle.points +
+      ' points will be credited to your account once verification is complete.';
+  }
+
+  function finish() {
+    ZephorKiosk.clearState();
+    window.location.href = '/';
+  }
+
+  document.getElementById('btn-done').addEventListener('click', finish);
+
+  // Auto-return to the idle screen after a short countdown.
+  var remaining = 10;
+  var countEl = document.getElementById('ty-count');
+  var tick = setInterval(function () {
+    remaining -= 1;
+    if (remaining <= 0) { clearInterval(tick); finish(); return; }
+    countEl.textContent = remaining;
+  }, 1000);
+</script>
+{% endblock %}

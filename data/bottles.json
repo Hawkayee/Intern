@@ -1,0 +1,7 @@
+{
+  "8901234567890": { "brand": "Aquafina",  "size": "500ml", "type": "PET", "points": 10 },
+  "8901234567891": { "brand": "Bisleri",   "size": "1L",    "type": "PET", "points": 15 },
+  "8901234567892": { "brand": "Kinley",    "size": "250ml", "type": "PET", "points": 5  },
+  "8901234567893": { "brand": "Bailley",   "size": "500ml", "type": "PET", "points": 10 },
+  "8850389100691": { "brand": "Thanner",   "size": "1.5L",  "type": "PET", "points": 20 }
+}

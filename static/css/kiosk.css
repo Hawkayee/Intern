@@ -1,0 +1,451 @@
+/* ============================================================
+   Zephor RVM Kiosk — light theme
+   Derived from ZephorSiteARM base.css (accent + fonts), adapted
+   to a LIGHT surface for the touch kiosk. Sized for an 18.5"
+   touch display at 1366x768. Touch targets are deliberately big.
+   ============================================================ */
+
+/* ---- Fonts (bundled locally; offline-safe on the Radxa) ---- */
+@font-face {
+  font-family: 'Manrope';
+  src: url('/static/fonts/Manrope-VariableFont_wght.ttf') format('truetype');
+  font-weight: 200 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('/static/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype');
+  font-weight: 400 900;
+  font-display: swap;
+}
+
+/* ---- Theme tokens ---- */
+:root {
+  --accent:       #f15a24;   /* Zephor orange */
+  --accent-hover: #d1471d;
+  --accent-soft:  #fdece4;   /* tint for chips / highlights */
+
+  --bg:        #faf7f5;      /* page background (warm off-white) */
+  --surface:   #ffffff;      /* cards */
+  --ink:       #1a1a1a;      /* primary text */
+  --ink-soft:  #5a5550;      /* secondary text */
+  --muted:     #8a8580;      /* tertiary text */
+  --line:      #ece6e2;      /* hairline borders */
+
+  --success:   #4BB543;
+  --error:     #E74C3C;
+
+  --radius:    18px;
+  --radius-pill: 999px;
+  --shadow:    0 18px 50px rgba(60, 20, 0, 0.08);
+}
+
+/* ---- Reset / base ---- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;                 /* kiosk: no scrolling */
+}
+
+body {
+  font-family: 'Manrope', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;        /* no text selection on touch */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;       /* kill 300ms tap delay / double-tap zoom */
+}
+
+h1, h2, h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* ============================================================
+   Layout shell — every screen is a full-viewport flex column
+   ============================================================ */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  text-align: center;
+}
+
+/* Top brand bar shared by interactive screens */
+.brandbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 92px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 40px;
+}
+.brandbar img { height: 52px; width: auto; }
+.brandbar .wordmark {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--ink);
+}
+
+/* ============================================================
+   Cards / content blocks
+   ============================================================ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 44px 52px;
+  width: min(720px, 92vw);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+.title    { font-size: 2.6rem; margin-bottom: 14px; }
+.subtitle { font-size: 1.15rem; color: var(--ink-soft); line-height: 1.5; }
+
+/* ============================================================
+   Buttons (Zephor pill style, scaled up for touch)
+   ============================================================ */
+.btn {
+  appearance: none;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  padding: 20px 40px;
+  min-height: 68px;
+  cursor: pointer;
+  transition: transform .12s ease, background-color .2s ease, color .2s ease;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.btn-secondary:hover { background: var(--accent); color: #fff; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-soft);
+  border-color: var(--line);
+}
+
+.btn-block { width: 100%; }
+
+/* ============================================================
+   IDLE / attract screen
+   ============================================================ */
+.idle {
+  background:
+    radial-gradient(1200px 600px at 50% -10%, var(--accent-soft), transparent 60%),
+    var(--bg);
+  cursor: pointer;
+}
+.idle .logo {
+  width: 200px;
+  height: auto;
+  margin-bottom: 4px;
+  animation: floaty 4s ease-in-out infinite;
+}
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+.idle-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.idle .brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.4rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--ink);
+}
+.idle .tagline {
+  font-size: 1.4rem;
+  color: var(--ink-soft);
+  margin-top: 8px;
+}
+
+.idle-steps {
+  display: flex;
+  gap: 40px;
+  margin-top: 36px;
+}
+.idle-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 200px;
+}
+.idle-step .num {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.idle-step .lbl {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  line-height: 1.3;
+}
+
+.idle .touch-hint {
+  position: fixed;
+  bottom: 64px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 1px;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity: .4; } 50% { opacity: 1; } }
+
+/* ============================================================
+   REGISTER screen — prompt, display field, on-screen keyboard
+   ============================================================ */
+.register { justify-content: flex-start; padding-top: 120px; }
+
+.reg-prompt { margin-bottom: 8px; }
+.reg-prompt .title { font-size: 2.2rem; }
+.reg-prompt .subtitle { font-size: 1.1rem; }
+
+/* The entry display (shows what the keypad has typed) */
+.reg-display {
+  margin: 22px 0 6px;
+  width: min(640px, 90vw);
+  min-height: 84px;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Manrope', monospace;
+  font-size: 2.6rem;
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+.reg-display.is-error { border-color: var(--error); }
+.reg-display .placeholder { color: var(--muted); letter-spacing: 2px; font-weight: 500; font-size: 1.5rem; }
+
+.reg-error {
+  min-height: 28px;
+  color: var(--error);
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 10px;
+}
+
+/* Keyboard */
+.keyboard {
+  width: min(900px, 96vw);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+.keyboard .krow { display: flex; gap: 12px; justify-content: center; }
+.key {
+  appearance: none;
+  flex: 1 1 0;
+  min-width: 60px;
+  max-width: 96px;
+  height: 76px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(60,20,0,0.05);
+  transition: transform .08s ease, background-color .15s ease, color .15s ease;
+}
+.key:active { transform: scale(0.94); background: var(--accent-soft); }
+.key.key-wide { flex: 2 1 0; max-width: 200px; font-size: 1.2rem; }
+.key.key-accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+.key.key-accent:active { background: var(--accent-hover); }
+.key.key-muted { color: var(--ink-soft); }
+
+/* ============================================================
+   SLOT / CAPTURE screen
+   ============================================================ */
+.slot-stage {
+  width: min(420px, 80vw);
+  height: 300px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  margin: 28px 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The deposit opening behind the doors */
+.slot-opening {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 55%, #2a2622, #15110e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-soft);
+  font-size: 3rem;
+}
+
+/* Two sliding doors */
+.slot-door {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(180deg, #fff, #f1ece8);
+  border: 1px solid var(--line);
+  transition: transform 1s cubic-bezier(.6,.04,.3,1);
+  z-index: 2;
+}
+.slot-door.left  { left: 0;  border-right: 2px solid var(--accent); }
+.slot-door.right { right: 0; border-left:  2px solid var(--accent); }
+.slot-stage.open .slot-door.left  { transform: translateX(-100%); }
+.slot-stage.open .slot-door.right { transform: translateX(100%); }
+
+/* Camera capture flash overlay */
+.capture-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.capture-flash.fire { animation: flash .5s ease; }
+@keyframes flash { 0% { opacity: 0; } 35% { opacity: .9; } 100% { opacity: 0; } }
+
+.slot-status {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  min-height: 34px;
+  margin-top: 6px;
+}
+.slot-status .dot { color: var(--accent); }
+
+/* ============================================================
+   BOTTLE details
+   ============================================================ */
+.points-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: var(--radius-pill);
+  padding: 14px 30px;
+}
+.points-badge .num { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 800; line-height: 1; }
+.points-badge .lbl { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
+
+.detail-rows { width: 100%; }
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.15rem;
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-row .k { color: var(--ink-soft); }
+.detail-row .v { font-weight: 700; }
+
+/* ============================================================
+   THANK YOU — success check + auto-reset countdown
+   ============================================================ */
+.success-check {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  animation: pop .45s cubic-bezier(.2,.8,.3,1.4) both;
+}
+.success-check svg { width: 64px; height: 64px; }
+.success-check svg path {
+  stroke: var(--accent);
+  stroke-width: 8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 80;
+  stroke-dashoffset: 80;
+  animation: draw .5s .2s ease forwards;
+}
+@keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+.reset-note { font-size: .95rem; color: var(--muted); }
+
+/* ============================================================
+   Helpers
+   ============================================================ */
+.stack-lg > * + * { margin-top: 28px; }
+.stack-md > * + * { margin-top: 18px; }
+.row { display: flex; gap: 18px; }
+.row.center { justify-content: center; }
+.hidden { display: none !important; }
